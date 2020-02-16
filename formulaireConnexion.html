@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire Connexion</title>
+    
+    <!-- Ajout de Framwork CSS Bootstrap -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">    
+    
+    <!-- Ajout de Framwork CSS JavaScript -->
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    
+    <script>
+        /**************************************************************
+        * I) Géstion des événements
+        ***************************************************************/
+        $(document).ready(function(){
+            
+            $("#navbar-frame").load("/navbar.html");
+            
+            //---------------------------------------------------------
+            // I-0) Ciblage des éléments du DOM (Document Objet Model)
+            var $emailInput      = $("#email");
+            var $pwdInput        = $("#pwd");
+            var $errorDiv        = $("#errorDiv");
+            
+            //---------------------------------------------------------
+            //  I-1) Masquage des erreurs au chargement de la page
+            $errorDiv.hide();
+            
+            //---------------------------------------------------------
+            // I-2) Evenement envoie de fourmulaire 
+            // Capture de l'évenement d'envoi du formulaire
+            $("#form").submit(function(event){
+                
+                event.preventDefault();
+                
+                //-----------------------------------------------------
+                // I-2-0) Récupération de la saisie
+                var email      = $emailInput.val();
+                var pwd        = $pwdInput.val();
+                console.log("email = " + email);
+                console.log("pwd   = " + pwd);
+                
+ 
+                //-----------------------------------------------------
+                // I-2-1) Vérification de l'adresse email 
+                var emailToCheck = email;
+                var emailExists = inscriptionList.some(function(item){
+                    return item.email == emailToCheck;
+                });
+                console.log("emailExists = " + emailExists);
+                
+                //-----------------------------------------------------
+                // I-2-2) Vérification du mot de passe 
+                var pwdToCheck = pwd;
+                var pwdExists = inscriptionList.some(function(item){
+                    return item.pwd == pwdToCheck;
+                });
+                console.log("pwdExists = " + pwdExists);
+                
+                //-----------------------------------------------------
+                // I-2-3) Connexion lorsque le mot de passe et adresse email existent            
+                if(emailExists && pwdExists){
+                    //-----------------------------------------------------
+                    // I-2-3-1) Masquer le div des erreurs
+                    //$errorDiv.hide();
+                    $errorDiv.removeClass("alert-danger");
+                    $errorDiv.addClass("alert-success");
+                    $errorDiv.show();
+                    $errorDiv.text("Inscription existe ==> connexion ok");
+                    console.log("Inscription existe ==> connexion ok");
+                } else{
+                    //$errorDiv.hide();
+                    
+                    $errorDiv.removeClass("alert-success");
+                    $errorDiv.addClass("alert-danger");
+                    $errorDiv.show();
+                    $errorDiv.text("Compte non trouvé. Erreur de saisie");
+                    console.log("Compte non trouvé. Erreur de saisie");
+                }
+                
+                //-----------------------------------------------------
+                // I-2-7) Réinitialisation de la saisie
+                $emailInput.val("");
+                $pwdInput.val("");
+
+            
+            }); // form event
+
+        }); // DOM ready
+        
+        /**************************************************************
+        * II) Modélisation d'une Inscription
+        ***************************************************************/
+        // Constructeur objet ==> creation un modèle de livre
+        function Inscription(nom, prenom, email, pwd, datenais, sex){
+            this.nom      = nom;
+            this.prenom   = prenom;
+            this.email    = email;
+            this.pwd      = pwd;
+            this.datenais = datenais;
+            this.sex      = sex;
+            this.errorMessage = null;
+        }; // Class Inscription
+        
+        
+        /**************************************************************
+        * III) Liste des objets Inscription.
+        ***************************************************************/
+        var inscriptionList = [];
+          
+        // Récupération des données éventuelles stocké en LocalStorage
+        var data =  JSON.parse(window.localStorage.getItem("inscriptionList")) || [];
+        console.log(typeof data);
+        console.log(data);
+        
+        
+        // Liste des inscriptions
+        for(let item of data){
+            inscriptionList.push(new Inscription(item.nom, item.prenom, item.email, item.pwd, item.datenais, item.sex));
+        }
+        console.log("inscriptionList ==> getItem ");
+        console.log(inscriptionList);
+        
+    
+    </script>
+
+</head>
+
+<body class="container-fluid">
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!--navbar div with the id-->
+            <div id="navbar-frame"></div>
+            
+            <!--Message erreur-->
+            <div class="alert alert-danger mt-2" id="errorDiv">Erreur de saisie</div>
+            
+           <form method="post" id="form">
+              
+               <div class="form-group">
+                   <label for="email">Adresse email</label>
+                   <input type="email" id="email" required class="form-control"/>
+               </div>
+               
+               <div class="form-group">
+                   <label for="pwd">Mot de passe</label>
+                   <input type="password" id="pwd" required class="form-control">
+               </div>   
+
+               <button class="btn btn-primary btn-block mb-4" type="submit">Connexion</button>
+           </form>
+        
+        </div>      
+    </div>  
+
+      
+</body>
+</html>

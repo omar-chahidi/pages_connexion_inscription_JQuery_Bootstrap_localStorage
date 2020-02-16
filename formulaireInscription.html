@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire Inscription</title>
+    
+    <!-- Ajout de Framwork CSS Bootstrap -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">    
+    
+    <!-- Ajout de Framwork CSS JavaScript -->
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    
+    <script>
+        /**************************************************************
+        * I) Géstion des événements
+        ***************************************************************/
+        $(document).ready(function(){
+            
+            //---------------------------------------------------------
+            // Ajout nav bar
+            $("#navbar-frame").load("/navbar.html");
+            
+            //---------------------------------------------------------
+            // I-0) Ciblage des éléments du DOM (Document Objet Model)
+            var $nomInput        = $("#nom");
+            var $prenomInput     = $("#prenom");
+            var $emailInput      = $("#email");
+            var $pwdInput        = $("#pwd");
+            var $datenaisInput   = $("#datenais");
+            var $radioHommeInput = $("#radioHomme");
+            var $radioFemmeInput = $("#radioFemme");
+            var $errorDiv        = $("#errorDiv");
+            
+            //---------------------------------------------------------
+            //  I-1) Masquage des erreurs au chargement de la page
+            $errorDiv.hide();
+            
+            //---------------------------------------------------------
+            // I-2) Evenement envoie de fourmulaire 
+            // Capture de l'évenement d'envoi du formulaire
+            $("#form").submit(function(event){
+                
+                event.preventDefault();
+                
+                //-----------------------------------------------------
+                // I-2-0) Récupération de la saisie
+                var nom        = $nomInput.val();
+                var prenom     = $prenomInput.val();
+                var email      = $emailInput.val();
+                var pwd        = $pwdInput.val();
+                var datenais   = $datenaisInput.val();
+                var radioHomme = $radioHommeInput.val();
+                var radioFemme = $radioFemmeInput.val();
+                var sex = "";        
+                if($radioHommeInput.is(':checked')){sex = radioHomme ;}
+                else if($radioFemmeInput.is(':checked')){sex = radioFemme ;}
+                console.log("--------------------------------");
+                console.log("nom        = " + nom);
+                console.log("prenom     = " + prenom);
+                console.log("email      = " + email);
+                console.log("pwd        = " + pwd);
+                console.log("datenais   = " + datenais);
+                console.log("sex        = " + sex);
+                console.log("--------------------------------");
+                
+                //-----------------------------------------------------
+                // I-2-1) Construction d'une instance de inscription
+                var nouvelleInscription = new Inscription(nom, prenom, email, pwd, datenais, sex);
+                console.log(nouvelleInscription.nom, nouvelleInscription.prenom, nouvelleInscription.email, nouvelleInscription.pwd, nouvelleInscription.datenais, nouvelleInscription.sex);
+                console.log(typeof nouvelleInscription);
+                console.log(nouvelleInscription);
+                
+                //-----------------------------------------------------
+                // I-2-2) Empêcher les doublons. Il ne peut pas avoir des doublons sur une inscription
+                var emailToAdd = nouvelleInscription.email;
+                var inscriptionExists = inscriptionList.some(function(item){
+                    return item.email == emailToAdd;
+                });
+                if(inscriptionExists){
+                    //-----------------------------------------------------
+                    // I-2-3) Si inscription existe affichage d'ereur et pas d'ajout
+                    nouvelleInscription.errorMessage = "Cette inscription existe déjà";
+                    console.log("Cette inscription existe déjà");
+                    $errorDiv.show();
+                    $errorDiv.text(nouvelleInscription.errorMessage);
+                } else{
+                    //-----------------------------------------------------
+                    // I-2-4) Masquer le div des erreurs
+                    $errorDiv.hide();
+                    
+                    //-----------------------------------------------------
+                    // I-2-5) Stockage de la nouvelle inscription dans ma liste (tableau)
+                    inscriptionList.push(nouvelleInscription);
+                    console.log(typeof inscriptionList);
+                    console.log(inscriptionList);
+
+                    //-----------------------------------------------------
+                    // I-2-6) PERSISTANCE Ajout de la nouvelle inscription au local storage pour enregistrer les choix en local
+                    window.localStorage.setItem("inscriptionList", JSON.stringify(inscriptionList));
+                    
+                    
+                    //-----------------------------------------------------
+                    // I-2-7) Redirection vers la page connexion
+                    //$("<a href='https://www.google.fr/'></a>").click(); 
+                    //window.open("https://www.w3schools.com");
+                    window.open("formulaireConnexion.html");
+                }
+                
+                
+                //-----------------------------------------------------
+                // I-2-8) Réinitialisation des champs nom, prenom, email, pwd, datenais, sex
+                $nomInput.val("");
+                $prenomInput.val("");
+                $emailInput.val("");
+                $pwdInput.val("");
+                $datenaisInput.val("");
+                $radioHommeInput.prop("checked", false);
+                $radioFemmeInput.prop("checked", false);
+
+            
+            }); // form event
+
+        }); // DOM ready
+        
+        /**************************************************************
+        * II) Modélisation d'une Inscription
+        ***************************************************************/
+        // Constructeur objet ==> creation un modèle de livre
+        function Inscription(nom, prenom, email, pwd, datenais, sex){
+            this.nom      = nom;
+            this.prenom   = prenom;
+            this.email    = email;
+            this.pwd      = pwd;
+            this.datenais = datenais;
+            this.sex      = sex;
+            this.errorMessage = null;
+        }; // Class Inscription
+        
+        
+        /**************************************************************
+        * III) Liste des objets Inscription. Je profite de ce tableau 
+        * pour faire de la percisstance
+        ***************************************************************/
+        var inscriptionList = [];
+        
+        var inscriptionList = [ 
+            new Inscription("CHAHIDI", "Omar", "OCI@gmail.com", "123", "14-05-1984", "H" )
+        ];
+        console.log(inscriptionList);
+        
+        // Récupération des données éventuelles stocké en LocalStorage
+        var data =  JSON.parse(window.localStorage.getItem("inscriptionList")) || [];
+        console.log(typeof data);
+        console.log(data);
+        
+        
+        // Liste des inscriptions
+        for(let item of data){
+            inscriptionList.push(new Inscription(item.nom, item.prenom, item.email, item.pwd, item.datenais, item.sex));
+        }
+        console.log("inscriptionList ==> getItem ");
+        console.log(inscriptionList);
+        
+    
+    </script>
+
+</head>
+
+<body class="container-fluid">
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+          
+            <!--navbar div with the id-->
+            <div id="navbar-frame"></div>
+            
+            <!--Message erreur-->
+           <div class="alert alert-danger mt-2" id="errorDiv">Erreur de saisie</div>
+            
+           <form method="post" id="form">
+              
+               <div class="form-group">
+                   <label for="nom">Nom</label>
+                   <input type="text" id="nom" required class="form-control">
+               </div>
+               
+               <div class="form-group">
+                   <label for="prenom">Prenom</label>
+                   <input type="text" id="prenom" required class="form-control">
+               </div>
+               
+               <div class="form-group">
+                   <label for="email">Adresse email</label>
+                   <input type="email" id="email" required class="form-control"/>
+               </div>
+               
+               <div class="form-group">
+                   <label for="pwd">Mot de passe</label>
+                   <input type="password" id="pwd" required class="form-control">
+               </div>
+               
+               <div class="form-group">
+                   <label for="datenais">Date de naissance</label>
+                   <input type="date" id="datenais" required class="form-control"/>
+               </div>
+               
+              <div class="form-check form-check-inline">
+                  <INPUT type="radio" name="sexe" value="M" id="radioHomme" class="form-check-input"/> 
+                  <label class="form-check-label" for="radioHomme">Homme</label>
+              </div>
+               
+              <div class="form-check form-check-inline">
+                  <INPUT type="radio" name="sexe" value="F" id="radioFemme" checked class="form-check-input"/> 
+                  <label class="form-check-label" for="radioFemme">Femme</label>
+              </div>
+               
+               <button class="btn btn-primary btn-block mb-4" type="submit">Inscription</button>
+           </form>
+        
+        </div>      
+    </div>  
+
+      
+</body>
+</html>

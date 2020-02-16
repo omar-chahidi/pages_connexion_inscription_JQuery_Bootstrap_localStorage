@@ -1,0 +1,13 @@
+{
+  "name": "InscriptionAuthentificationJavaScript",
+  "version": "1.0.0",
+  "description": "Exo inscription et authentification avec JavaScript",
+  "main": "index.js",
+  "author": "omar",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1"
+  }
+}
